@@ -184,6 +184,8 @@ const AdminDashboard = () => {
     try {
       const res = await fetch("http://localhost:3000/admin");
       const data = await res.json();
+      console.log(data);
+
       setAppointments(data);
     } catch (err) {
       console.log(err);
@@ -217,8 +219,7 @@ const AdminDashboard = () => {
   const totalAppointments = appointments.length;
 
   const todaysAppointments = appointments.filter(
-    (a) =>
-      new Date(a.date).toDateString() === new Date().toDateString(),
+    (a) => new Date(a.date).toDateString() === new Date().toDateString(),
   ).length;
 
   const pendingAppointments = appointments.filter(
@@ -271,9 +272,7 @@ const AdminDashboard = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="font-semibold">{app.name}</p>
-                <p className="text-sm text-gray-500">
-                  {app.email || "—"}
-                </p>
+                <p className="text-sm text-gray-500">{app.email || "—"}</p>
               </div>
 
               {app.status === "pending" && (

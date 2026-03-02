@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 const Example = () => {
-  const [data, setData] = useState([]);
-
-  const getData = async () => {
-    const res = await fetch("https://dummyjson.com/comments");
-    const data = await res.json()
-    console.log(data);
-    
+  const fetchData = async () => {
+    const res = await fetch("http://localhost:3000/admin");
+    console.log(await res.json());
   };
-  getData();
-
-  // const data = await fetch("https://dummyjson.com/comments");
-  // console.log(data);
-
+  fetchData();
   return <div>example</div>;
 };
 
