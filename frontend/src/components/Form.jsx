@@ -14,7 +14,7 @@ const Form = ({ closeModal }) => {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:3000/", {
+      const res = await fetch("https://clinic-backend-2kz2.onrender.com/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

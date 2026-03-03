@@ -182,7 +182,7 @@ const AdminDashboard = () => {
 
   const fetchAppointments = async () => {
     try {
-      const res = await fetch("http://localhost:3000/admin");
+      const res = await fetch("https://clinic-backend-2kz2.onrender.com/admin");
       const data = await res.json();
       console.log(data);
 
@@ -193,14 +193,14 @@ const AdminDashboard = () => {
   };
 
   const handleApprove = async (id) => {
-    await fetch(`http://localhost:3000/admin/approve/${id}`, {
+    await fetch(`https://clinic-backend-2kz2.onrender.com/admin/approve/${id}`, {
       method: "PUT",
     });
     fetchAppointments();
   };
 
   const handleCancel = async (id) => {
-    await fetch(`http://localhost:3000/admin/cancel/${id}`, {
+    await fetch(`https://clinic-backend-2kz2.onrender.com/admin/cancel/${id}`, {
       method: "PUT",
     });
     fetchAppointments();
@@ -209,7 +209,7 @@ const AdminDashboard = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete permanently?")) return;
 
-    await fetch(`http://localhost:3000/admin/delete/${id}`, {
+    await fetch(`https://clinic-backend-2kz2.onrender.com/admin/delete/${id}`, {
       method: "DELETE",
     });
 
