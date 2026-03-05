@@ -4,11 +4,16 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const appointmentModel = require("../models/appointment");
 const sendEmail = require("../utils/sendEmail");
+const authenticateAdmin = require("../middleware/authMiddleware");
 
 const adminUser = {
   username: "admin",
   passwordHash: bcrypt.hashSync("admin123", 10),
 };
+
+//////////////////////////////////////////////////
+// ADMIN LOGIN
+//////////////////////////////////////////////////
 
 router.post("/", (req, res) => {
   const { username, password } = req.body;
@@ -23,23 +28,36 @@ router.post("/", (req, res) => {
     //res.json({token:token}) -- used for testing
 
     //if token is generated then cookie is created
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 1000,
+    });
     return res.status(200).json({ message: "Login Successful" });
   }
   res.status(401).json({ message: "Invalid Credentials" });
 });
 
-router.get("/", async (req, res) => {
-  const appointments = await appointmentModel.find().sort({ createdAt: -1 });
-  res.json(appointments);
+//////////////////////////////////////////////////
+// GET ALL APPOINTMENTS (PROTECTED)
+//////////////////////////////////////////////////
+
+router.get("/", authenticateAdmin, async (req, res) => {
+  try {
+    const appointments = await appointmentModel.find().sort({ createdAt: -1 });
+    res.json(appointments);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching appointments" });
+  }
 });
 
-router.put("/approve/:id", async (req, res) => {
+router.put("/approve/:id",authenticateAdmin, async (req, res) => {
   try {
     const appointment = await appointmentModel.findByIdAndUpdate(
       req.params.id,
       { status: "approved" },
-      { new: true }
+      { new: true },
     );
 
     await sendEmail({
@@ -60,12 +78,12 @@ router.put("/approve/:id", async (req, res) => {
   }
 });
 
-router.put("/cancel/:id", async (req, res) => {
+router.put("/cancel/:id", authenticateAdmin, async (req, res) => {
   try {
     const appointment = await appointmentModel.findByIdAndUpdate(
       req.params.id,
       { status: "cancelled" },
-      { new: true }
+      { new: true },
     );
 
     await sendEmail({
@@ -85,9 +103,13 @@ router.put("/cancel/:id", async (req, res) => {
   }
 });
 
-router.delete("/delete/:id", async (req, res) => {
-  const appointment = await appointmentModel.findByIdAndDelete(req.params.id);
-  res.json(appointment);
+router.delete("/delete/:id", authenticateAdmin, async (req, res) => {
+  try {
+    const appointment = await appointmentModel.findByIdAndDelete(req.params.id);
+    res.json(appointment);
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting appointment" });
+  }
 });
 
 module.exports = router;

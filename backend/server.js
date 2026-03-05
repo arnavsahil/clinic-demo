@@ -10,8 +10,8 @@ connectDB();
 const cookieParser = require("cookie-parser");
 const PORT = process.env.PORT || 3000;
 
-const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY);
+// const { Resend } = require("resend");
+// const resend = new Resend(process.env.RESEND_API_KEY);
 
 app.use(cookieParser());
 app.use(express.json());   // ← VERY IMPORTANT
