@@ -30,8 +30,8 @@ router.post("/", (req, res) => {
     //if token is generated then cookie is created
     res.cookie("token", token, {
       httpOnly: true,
-      sameSite: "strict",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      secure: true,
       maxAge: 60 * 60 * 1000,
     });
     return res.status(200).json({ message: "Login Successful" });
@@ -115,8 +115,8 @@ router.delete("/delete/:id", authenticateAdmin, async (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    secure: true,
   });
   res.status(200).json({ message: "Logged out successfully" });
 });
