@@ -172,8 +172,9 @@
 // export default AdminDashboard;
 
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ handleLogout }) => {
   const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
@@ -182,7 +183,13 @@ const AdminDashboard = () => {
 
   const fetchAppointments = async () => {
     try {
-      const res = await fetch("https://clinic-backend-2kz2.onrender.com/admin");
+      const res = await fetch("https://clinic-backend-2kz2.onrender.com/admin", {
+        credentials: "include",
+      });
+      if (res.status === 401) {
+        handleLogout();
+        return;
+      }
       const data = await res.json();
       console.log(data);
 
@@ -193,15 +200,20 @@ const AdminDashboard = () => {
   };
 
   const handleApprove = async (id) => {
-    await fetch(`https://clinic-backend-2kz2.onrender.com/admin/approve/${id}`, {
-      method: "PUT",
-    });
+    await fetch(
+      `https://clinic-backend-2kz2.onrender.com/admin/approve/${id}`,
+      {
+        method: "PUT",
+        credentials: "include",
+      },
+    );
     fetchAppointments();
   };
 
   const handleCancel = async (id) => {
     await fetch(`https://clinic-backend-2kz2.onrender.com/admin/cancel/${id}`, {
       method: "PUT",
+      credentials: "include",
     });
     fetchAppointments();
   };
@@ -211,6 +223,7 @@ const AdminDashboard = () => {
 
     await fetch(`https://clinic-backend-2kz2.onrender.com/admin/delete/${id}`, {
       method: "DELETE",
+      credentials: "include",
     });
 
     fetchAppointments();
@@ -226,6 +239,20 @@ const AdminDashboard = () => {
     (a) => a.status === "pending",
   ).length;
 
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      await fetch("https://clinic-backend-2kz2.onrender.com/admin/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.log(err);
+    }
+    handleLogout();
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 p-4 sm:p-6">
       {/* Header */}
@@ -236,6 +263,12 @@ const AdminDashboard = () => {
         <span className="text-sm text-gray-500">
           {new Date().toDateString()}
         </span>
+        <button
+          onClick={logout}
+          className="px-4 py-2 bg-red-500 text-white rounded"
+        >
+          Logout
+        </button>
       </div>
 
       {/* Stats */}
