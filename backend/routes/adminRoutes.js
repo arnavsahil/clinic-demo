@@ -52,7 +52,7 @@ router.get("/", authenticateAdmin, async (req, res) => {
   }
 });
 
-router.put("/approve/:id",authenticateAdmin, async (req, res) => {
+router.put("/approve/:id", authenticateAdmin, async (req, res) => {
   try {
     const appointment = await appointmentModel.findByIdAndUpdate(
       req.params.id,
@@ -110,6 +110,15 @@ router.delete("/delete/:id", authenticateAdmin, async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error deleting appointment" });
   }
+});
+
+router.post("/logout", (req, res) => {
+  res.clearCookie("token", {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+  });
+  res.status(200).json({ message: "Logged out successfully" });
 });
 
 module.exports = router;
